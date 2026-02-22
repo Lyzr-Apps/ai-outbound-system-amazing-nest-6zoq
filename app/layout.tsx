@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Lora, Rubik } from 'next/font/google'
 import Script from 'next/script'
 import './globals.css'
 import { IframeLoggerInit } from '@/components/IframeLoggerInit'
@@ -7,6 +7,8 @@ import ErrorBoundary from '@/components/ErrorBoundary'
 import { AgentInterceptorProvider } from '@/components/AgentInterceptorProvider'
 
 const inter = Inter({ subsets: ['latin'] })
+const lora = Lora({ subsets: ['latin'], variable: '--font-lora', weight: ['400', '500', '600', '700'] })
+const rubik = Rubik({ subsets: ['latin'], variable: '--font-rubik', weight: ['400', '500', '600'] })
 
 export const metadata: Metadata = {
   title: 'Next.js App',
@@ -23,7 +25,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className} suppressHydrationWarning>
+      <body className={`${inter.className} ${lora.variable} ${rubik.variable}`} suppressHydrationWarning>
         <IframeLoggerInit />
         <ErrorBoundary>
           <AgentInterceptorProvider>
