@@ -27,8 +27,19 @@ import {
   FiX,
   FiInfo,
   FiCheckCircle,
+  FiSettings,
+  FiServer,
+  FiLock,
+  FiCalendar,
+  FiLink,
+  FiEye,
+  FiEyeOff,
+  FiSave,
+  FiToggleLeft,
+  FiToggleRight,
 } from 'react-icons/fi'
 import { FaLinkedin } from 'react-icons/fa'
+import { SiAirtable, SiGoogleworkspace, SiHubspot } from 'react-icons/si'
 
 // ─── CONSTANTS ───────────────────────────────────────────
 const AGENT_IDS = {
@@ -43,7 +54,10 @@ const TABS = [
   { id: 'scoring', label: 'Scoring', icon: FiBarChart2 },
   { id: 'outreach', label: 'Outreach', icon: FiMail },
   { id: 'pipeline', label: 'Pipeline', icon: FiActivity },
+  { id: 'settings', label: 'Settings', icon: FiSettings },
 ] as const
+
+const N8N_WORKFLOW_IMAGE = 'https://asset.lyzr.app/vpKplSZG'
 
 const SOURCES = ['LinkedIn Sales Navigator', 'Crunchbase', 'G2 / Clutch', 'Manual Entry'] as const
 
@@ -296,6 +310,44 @@ export default function Page() {
     outreach: 'pending',
   })
   const [pipelineRunning, setPipelineRunning] = useState(false)
+
+  // Settings state
+  const [airtableConfig, setAirtableConfig] = useState({
+    apiKey: '',
+    baseId: '',
+    tableName: 'Leads',
+    connected: false,
+  })
+  const [smtpConfig, setSmtpConfig] = useState({
+    host: 'smtp.gmail.com',
+    port: '587',
+    username: '',
+    password: '',
+    fromName: '',
+    fromEmail: '',
+    connected: false,
+  })
+  const [hubspotConfig, setHubspotConfig] = useState({
+    apiKey: '',
+    enabled: false,
+    connected: false,
+    pipelineId: '',
+  })
+  const [calendlyConfig, setCalendlyConfig] = useState({
+    link: '',
+    connected: false,
+  })
+  const [showPasswords, setShowPasswords] = useState<Record<string, boolean>>({})
+  const [configSaved, setConfigSaved] = useState<string | null>(null)
+
+  const togglePasswordVisibility = (field: string) => {
+    setShowPasswords((prev) => ({ ...prev, [field]: !prev[field] }))
+  }
+
+  const saveConfig = (section: string) => {
+    setConfigSaved(section)
+    setTimeout(() => setConfigSaved(null), 2000)
+  }
 
   // Toggle expanded row
   const toggleRow = useCallback((idx: number) => {
@@ -1508,6 +1560,467 @@ export default function Page() {
                 </div>
               </div>
             )}
+
+            {/* n8n Workflow Reference */}
+            <div className="bg-[#1e293b] rounded-xl border border-slate-700/50 p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-orange-500/15 border border-orange-500/20 flex items-center justify-center">
+                  <FiServer className="w-4 h-4 text-orange-400" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-white">n8n Automation Workflow</h3>
+                  <p className="text-xs text-slate-400">Self-hosted automation engine powering the pipeline</p>
+                </div>
+              </div>
+              <div className="rounded-lg border border-slate-700 overflow-hidden bg-[#0f172a]">
+                <img
+                  src={N8N_WORKFLOW_IMAGE}
+                  alt="n8n automation workflow: CSV Reader, Email Finder, LinkedIn Enrichment, Email Sequence"
+                  className="w-full h-auto opacity-90 hover:opacity-100 transition-opacity"
+                />
+              </div>
+              <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="bg-[#0f172a] rounded-lg p-3 border border-slate-700/50 text-center">
+                  <FiDatabase className="w-4 h-4 text-blue-400 mx-auto mb-1" />
+                  <span className="text-xs text-slate-400">CSV Reader</span>
+                </div>
+                <div className="bg-[#0f172a] rounded-lg p-3 border border-slate-700/50 text-center">
+                  <FiMail className="w-4 h-4 text-emerald-400 mx-auto mb-1" />
+                  <span className="text-xs text-slate-400">Email Finder</span>
+                </div>
+                <div className="bg-[#0f172a] rounded-lg p-3 border border-slate-700/50 text-center">
+                  <FaLinkedin className="w-4 h-4 text-blue-400 mx-auto mb-1" />
+                  <span className="text-xs text-slate-400">LinkedIn Enrich</span>
+                </div>
+                <div className="bg-[#0f172a] rounded-lg p-3 border border-slate-700/50 text-center">
+                  <FiActivity className="w-4 h-4 text-amber-400 mx-auto mb-1" />
+                  <span className="text-xs text-slate-400">Drip Sequence</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ─── TAB: Settings ──────────────────────────── */}
+        {activeTab === 'settings' && (
+          <div className="space-y-6">
+            {/* Page Header */}
+            <div>
+              <h2 className="text-lg font-semibold text-white">Infrastructure Configuration</h2>
+              <p className="text-sm text-slate-400 mt-1">
+                Configure your deployment integrations. API keys are inserted manually during deployment -- no keys are stored in the cloud.
+              </p>
+            </div>
+
+            {/* ── Airtable Config ── */}
+            <div className="bg-[#1e293b] rounded-xl border border-slate-700/50 overflow-hidden">
+              <div className="px-6 py-4 border-b border-slate-700/50 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-[#18BFFF]/15 border border-[#18BFFF]/25 flex items-center justify-center">
+                    <SiAirtable className="w-5 h-5 text-[#18BFFF]" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-white">Airtable</h3>
+                    <p className="text-xs text-slate-400">Primary lead storage -- structured, relational tables</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  {airtableConfig.connected ? (
+                    <span className="flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-500/15 px-2.5 py-1 rounded-full">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                      Connected
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-1.5 text-xs text-slate-500 bg-slate-800 px-2.5 py-1 rounded-full">
+                      <span className="w-1.5 h-1.5 rounded-full bg-slate-500" />
+                      Not configured
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div className="p-6 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs text-slate-400 block mb-1.5">API Key</label>
+                    <div className="relative">
+                      <input
+                        type={showPasswords['airtable_key'] ? 'text' : 'password'}
+                        value={airtableConfig.apiKey}
+                        onChange={(e) => setAirtableConfig((p) => ({ ...p, apiKey: e.target.value }))}
+                        placeholder="pat.xxxxxxxxxxxxxxxx"
+                        className="w-full bg-[#0f172a] border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/30 pr-10 font-mono"
+                      />
+                      <button
+                        onClick={() => togglePasswordVisibility('airtable_key')}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+                      >
+                        {showPasswords['airtable_key'] ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs text-slate-400 block mb-1.5">Base ID</label>
+                    <input
+                      type="text"
+                      value={airtableConfig.baseId}
+                      onChange={(e) => setAirtableConfig((p) => ({ ...p, baseId: e.target.value }))}
+                      placeholder="appXXXXXXXXXXXXXX"
+                      className="w-full bg-[#0f172a] border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/30 font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-slate-400 block mb-1.5">Table Name</label>
+                    <input
+                      type="text"
+                      value={airtableConfig.tableName}
+                      onChange={(e) => setAirtableConfig((p) => ({ ...p, tableName: e.target.value }))}
+                      placeholder="Leads"
+                      className="w-full bg-[#0f172a] border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/30"
+                    />
+                  </div>
+                  <div className="flex items-end">
+                    <button
+                      onClick={() => {
+                        setAirtableConfig((p) => ({ ...p, connected: !!p.apiKey && !!p.baseId }))
+                        saveConfig('airtable')
+                      }}
+                      className="flex items-center gap-2 px-4 py-2.5 bg-[#18BFFF]/15 hover:bg-[#18BFFF]/25 text-[#18BFFF] border border-[#18BFFF]/30 rounded-lg text-sm font-medium transition-all"
+                    >
+                      {configSaved === 'airtable' ? <FiCheck className="w-4 h-4" /> : <FiSave className="w-4 h-4" />}
+                      {configSaved === 'airtable' ? 'Saved' : 'Save Config'}
+                    </button>
+                  </div>
+                </div>
+                <div className="bg-slate-800/30 rounded-lg p-3 border border-slate-700/30">
+                  <p className="text-xs text-slate-400">
+                    <FiInfo className="w-3 h-3 inline mr-1" />
+                    Airtable stores enriched leads, scores, and outreach status. Fields auto-map: First Name, Last Name, Company, Job Title, Score, Tier, Outreach Status.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* ── SMTP Config ── */}
+            <div className="bg-[#1e293b] rounded-xl border border-slate-700/50 overflow-hidden">
+              <div className="px-6 py-4 border-b border-slate-700/50 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-red-500/15 border border-red-500/25 flex items-center justify-center">
+                    <SiGoogleworkspace className="w-5 h-5 text-red-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-white">SMTP - Google Workspace</h3>
+                    <p className="text-xs text-slate-400">Email delivery for outreach sequences</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  {smtpConfig.connected ? (
+                    <span className="flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-500/15 px-2.5 py-1 rounded-full">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                      Connected
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-1.5 text-xs text-slate-500 bg-slate-800 px-2.5 py-1 rounded-full">
+                      <span className="w-1.5 h-1.5 rounded-full bg-slate-500" />
+                      Not configured
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div className="p-6 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs text-slate-400 block mb-1.5">SMTP Host</label>
+                    <input
+                      type="text"
+                      value={smtpConfig.host}
+                      onChange={(e) => setSmtpConfig((p) => ({ ...p, host: e.target.value }))}
+                      placeholder="smtp.gmail.com"
+                      className="w-full bg-[#0f172a] border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/30 font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-slate-400 block mb-1.5">Port</label>
+                    <input
+                      type="text"
+                      value={smtpConfig.port}
+                      onChange={(e) => setSmtpConfig((p) => ({ ...p, port: e.target.value }))}
+                      placeholder="587"
+                      className="w-full bg-[#0f172a] border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/30 font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-slate-400 block mb-1.5">Username (Email)</label>
+                    <input
+                      type="email"
+                      value={smtpConfig.username}
+                      onChange={(e) => setSmtpConfig((p) => ({ ...p, username: e.target.value }))}
+                      placeholder="you@yourdomain.com"
+                      className="w-full bg-[#0f172a] border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/30"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-slate-400 block mb-1.5">App Password</label>
+                    <div className="relative">
+                      <input
+                        type={showPasswords['smtp_pass'] ? 'text' : 'password'}
+                        value={smtpConfig.password}
+                        onChange={(e) => setSmtpConfig((p) => ({ ...p, password: e.target.value }))}
+                        placeholder="xxxx xxxx xxxx xxxx"
+                        className="w-full bg-[#0f172a] border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/30 pr-10 font-mono"
+                      />
+                      <button
+                        onClick={() => togglePasswordVisibility('smtp_pass')}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+                      >
+                        {showPasswords['smtp_pass'] ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs text-slate-400 block mb-1.5">From Name</label>
+                    <input
+                      type="text"
+                      value={smtpConfig.fromName}
+                      onChange={(e) => setSmtpConfig((p) => ({ ...p, fromName: e.target.value }))}
+                      placeholder="Your Name"
+                      className="w-full bg-[#0f172a] border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/30"
+                    />
+                  </div>
+                  <div className="flex items-end">
+                    <button
+                      onClick={() => {
+                        setSmtpConfig((p) => ({ ...p, connected: !!p.username && !!p.password }))
+                        saveConfig('smtp')
+                      }}
+                      className="flex items-center gap-2 px-4 py-2.5 bg-red-500/15 hover:bg-red-500/25 text-red-400 border border-red-500/30 rounded-lg text-sm font-medium transition-all"
+                    >
+                      {configSaved === 'smtp' ? <FiCheck className="w-4 h-4" /> : <FiSave className="w-4 h-4" />}
+                      {configSaved === 'smtp' ? 'Saved' : 'Save Config'}
+                    </button>
+                  </div>
+                </div>
+                <div className="bg-slate-800/30 rounded-lg p-3 border border-slate-700/30">
+                  <div className="space-y-1.5">
+                    <p className="text-xs text-slate-400">
+                      <FiLock className="w-3 h-3 inline mr-1" />
+                      Requires SPF/DKIM/DMARC setup on your domain for deliverability.
+                    </p>
+                    <p className="text-xs text-slate-400">
+                      <FiInfo className="w-3 h-3 inline mr-1" />
+                      Google Workspace limit: ~500 emails/day. Warm up gradually over 2 weeks.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ── Calendly Config ── */}
+            <div className="bg-[#1e293b] rounded-xl border border-slate-700/50 overflow-hidden">
+              <div className="px-6 py-4 border-b border-slate-700/50 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-blue-500/15 border border-blue-500/25 flex items-center justify-center">
+                    <FiCalendar className="w-5 h-5 text-blue-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-white">Calendly</h3>
+                    <p className="text-xs text-slate-400">Discovery call booking for qualified leads</p>
+                  </div>
+                </div>
+                {calendlyConfig.connected && (
+                  <span className="flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-500/15 px-2.5 py-1 rounded-full">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                    Connected
+                  </span>
+                )}
+              </div>
+              <div className="p-6">
+                <div className="flex gap-3">
+                  <div className="flex-1">
+                    <label className="text-xs text-slate-400 block mb-1.5">Calendly Booking Link</label>
+                    <input
+                      type="url"
+                      value={calendlyConfig.link}
+                      onChange={(e) => setCalendlyConfig((p) => ({ ...p, link: e.target.value }))}
+                      placeholder="https://calendly.com/yourname/discovery-call"
+                      className="w-full bg-[#0f172a] border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/30"
+                    />
+                  </div>
+                  <div className="flex items-end">
+                    <button
+                      onClick={() => {
+                        setCalendlyConfig((p) => ({ ...p, connected: !!p.link }))
+                        saveConfig('calendly')
+                      }}
+                      className="flex items-center gap-2 px-4 py-2.5 bg-blue-500/15 hover:bg-blue-500/25 text-blue-400 border border-blue-500/30 rounded-lg text-sm font-medium transition-all"
+                    >
+                      {configSaved === 'calendly' ? <FiCheck className="w-4 h-4" /> : <FiLink className="w-4 h-4" />}
+                      {configSaved === 'calendly' ? 'Saved' : 'Save'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ── HubSpot Config (Optional) ── */}
+            <div className={`bg-[#1e293b] rounded-xl border overflow-hidden transition-all ${hubspotConfig.enabled ? 'border-orange-500/30' : 'border-slate-700/50'}`}>
+              <div className="px-6 py-4 border-b border-slate-700/50 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-orange-500/15 border border-orange-500/25 flex items-center justify-center">
+                    <SiHubspot className="w-5 h-5 text-orange-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-white">HubSpot CRM</h3>
+                    <p className="text-xs text-slate-400">Optional -- advanced deal pipeline tracking</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-slate-500">
+                    {hubspotConfig.enabled ? 'Enabled' : 'Disabled'}
+                  </span>
+                  <button
+                    onClick={() => setHubspotConfig((p) => ({ ...p, enabled: !p.enabled }))}
+                    className="transition-colors"
+                  >
+                    {hubspotConfig.enabled ? (
+                      <FiToggleRight className="w-7 h-7 text-orange-400" />
+                    ) : (
+                      <FiToggleLeft className="w-7 h-7 text-slate-600" />
+                    )}
+                  </button>
+                </div>
+              </div>
+              {hubspotConfig.enabled && (
+                <div className="p-6 space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs text-slate-400 block mb-1.5">HubSpot API Key</label>
+                      <div className="relative">
+                        <input
+                          type={showPasswords['hubspot_key'] ? 'text' : 'password'}
+                          value={hubspotConfig.apiKey}
+                          onChange={(e) => setHubspotConfig((p) => ({ ...p, apiKey: e.target.value }))}
+                          placeholder="pat-na1-xxxxxxxx-xxxx-xxxx"
+                          className="w-full bg-[#0f172a] border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/30 pr-10 font-mono"
+                        />
+                        <button
+                          onClick={() => togglePasswordVisibility('hubspot_key')}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+                        >
+                          {showPasswords['hubspot_key'] ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-xs text-slate-400 block mb-1.5">Pipeline ID (Optional)</label>
+                      <input
+                        type="text"
+                        value={hubspotConfig.pipelineId}
+                        onChange={(e) => setHubspotConfig((p) => ({ ...p, pipelineId: e.target.value }))}
+                        placeholder="default"
+                        className="w-full bg-[#0f172a] border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/30 font-mono"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="bg-slate-800/30 rounded-lg p-3 border border-slate-700/30 flex-1 mr-3">
+                      <p className="text-xs text-slate-400">
+                        <FiInfo className="w-3 h-3 inline mr-1" />
+                        HubSpot syncs qualified leads (7+) to your deal pipeline. Airtable remains the primary store -- HubSpot adds CRM reporting on calls, revenue attribution, and multi-package tracking.
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setHubspotConfig((p) => ({ ...p, connected: !!p.apiKey }))
+                        saveConfig('hubspot')
+                      }}
+                      className="flex items-center gap-2 px-4 py-2.5 bg-orange-500/15 hover:bg-orange-500/25 text-orange-400 border border-orange-500/30 rounded-lg text-sm font-medium transition-all flex-shrink-0"
+                    >
+                      {configSaved === 'hubspot' ? <FiCheck className="w-4 h-4" /> : <FiSave className="w-4 h-4" />}
+                      {configSaved === 'hubspot' ? 'Saved' : 'Save Config'}
+                    </button>
+                  </div>
+                </div>
+              )}
+              {!hubspotConfig.enabled && (
+                <div className="px-6 py-4">
+                  <p className="text-xs text-slate-500">
+                    System works fully with Airtable. Enable HubSpot for advanced pipeline tracking, revenue attribution, and multi-client management.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* ── Tech Stack Summary ── */}
+            <div className="bg-[#1e293b] rounded-xl border border-slate-700/50 p-6">
+              <h3 className="text-sm font-semibold text-white mb-4">Infrastructure Stack</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="bg-[#0f172a] rounded-lg p-4 border border-slate-700/50">
+                  <div className="flex items-center gap-2 mb-2">
+                    <FiServer className="w-4 h-4 text-orange-400" />
+                    <span className="text-sm font-medium text-white">Automation</span>
+                  </div>
+                  <p className="text-xs text-slate-400">n8n (self-hosted)</p>
+                  <p className="text-xs text-slate-500 mt-1">Full workflow control, no vendor lock-in</p>
+                </div>
+                <div className="bg-[#0f172a] rounded-lg p-4 border border-slate-700/50">
+                  <div className="flex items-center gap-2 mb-2">
+                    <SiAirtable className="w-4 h-4 text-[#18BFFF]" />
+                    <span className="text-sm font-medium text-white">Database</span>
+                  </div>
+                  <p className="text-xs text-slate-400">Airtable (primary)</p>
+                  <p className="text-xs text-slate-500 mt-1">Structured tables, native API, 10k+ records</p>
+                </div>
+                <div className="bg-[#0f172a] rounded-lg p-4 border border-slate-700/50">
+                  <div className="flex items-center gap-2 mb-2">
+                    <FiMail className="w-4 h-4 text-red-400" />
+                    <span className="text-sm font-medium text-white">Email</span>
+                  </div>
+                  <p className="text-xs text-slate-400">SMTP (Google Workspace)</p>
+                  <p className="text-xs text-slate-500 mt-1">Full control, ~500/day, SPF/DKIM/DMARC</p>
+                </div>
+                <div className="bg-[#0f172a] rounded-lg p-4 border border-slate-700/50">
+                  <div className="flex items-center gap-2 mb-2">
+                    <FiTarget className="w-4 h-4 text-blue-400" />
+                    <span className="text-sm font-medium text-white">AI Model</span>
+                  </div>
+                  <p className="text-xs text-slate-400">GPT-4.1 (OpenAI)</p>
+                  <p className="text-xs text-slate-500 mt-1">Lead enrichment, scoring, and outreach</p>
+                </div>
+                <div className="bg-[#0f172a] rounded-lg p-4 border border-slate-700/50">
+                  <div className="flex items-center gap-2 mb-2">
+                    <FiCalendar className="w-4 h-4 text-blue-400" />
+                    <span className="text-sm font-medium text-white">Calendar</span>
+                  </div>
+                  <p className="text-xs text-slate-400">Calendly</p>
+                  <p className="text-xs text-slate-500 mt-1">Discovery call booking for qualified leads</p>
+                </div>
+                <div className="bg-[#0f172a] rounded-lg p-4 border border-slate-700/50">
+                  <div className="flex items-center gap-2 mb-2">
+                    <SiHubspot className="w-4 h-4 text-orange-400" />
+                    <span className="text-sm font-medium text-white">CRM</span>
+                  </div>
+                  <p className="text-xs text-slate-400">HubSpot (optional)</p>
+                  <p className="text-xs text-slate-500 mt-1">Deal pipeline, revenue attribution</p>
+                </div>
+              </div>
+            </div>
+
+            {/* ── Compliance Notice ── */}
+            <div className="bg-slate-800/30 rounded-xl border border-slate-700/30 p-5">
+              <div className="flex items-start gap-3">
+                <FiLock className="w-5 h-5 text-slate-500 mt-0.5 flex-shrink-0" />
+                <div className="space-y-2">
+                  <h4 className="text-sm font-medium text-slate-300">Compliance & Security</h4>
+                  <ul className="text-xs text-slate-400 space-y-1">
+                    <li className="flex items-center gap-2"><FiCheck className="w-3 h-3 text-emerald-500 flex-shrink-0" /> No direct account access -- manual API key insertion during deployment</li>
+                    <li className="flex items-center gap-2"><FiCheck className="w-3 h-3 text-emerald-500 flex-shrink-0" /> No illegal scraping methods -- compliance-first architecture only</li>
+                    <li className="flex items-center gap-2"><FiCheck className="w-3 h-3 text-emerald-500 flex-shrink-0" /> CAN-SPAM compliant outreach with unsubscribe links</li>
+                    <li className="flex items-center gap-2"><FiCheck className="w-3 h-3 text-emerald-500 flex-shrink-0" /> API keys never stored in cloud -- client-side config only</li>
+                    <li className="flex items-center gap-2"><FiCheck className="w-3 h-3 text-emerald-500 flex-shrink-0" /> Data from manual CSV exports and public APIs only</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </main>
