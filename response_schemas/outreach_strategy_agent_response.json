@@ -1,0 +1,52 @@
+{
+  "agent_name": "outreach_strategy_agent",
+  "agent_id": "699b295b952ac769d7566f38",
+  "description": "B2B Outreach and Engagement Strategy Specialist that generates personalized outreach strategies and messaging for qualified leads (score 7+) targeting B2B coaching/consulting offers ($3K-$20K).",
+  "agent_type": "json",
+  "accessor": "result",
+  "auto_generated": true,
+  "response_schema": {
+    "outreach_plans": [
+      {
+        "lead_name": "string",
+        "company": "string",
+        "primary_channel": "string",
+        "messaging_angle": "string",
+        "linkedin_message": "string",
+        "email_subject": "string",
+        "email_body": "string",
+        "follow_up_sequence": "string",
+        "conversation_starters": "string",
+        "timing_recommendation": "string",
+        "urgency_level": "string",
+        "key_talking_points": "string"
+      }
+    ],
+    "total_plans_generated": "string",
+    "channel_distribution": "string",
+    "overall_strategy_summary": "string",
+    "priority_outreach_order": "string"
+  },
+  "example_response": {
+    "outreach_plans": [
+      {
+        "lead_name": "sample string",
+        "company": "sample string",
+        "primary_channel": "sample string",
+        "messaging_angle": "sample string",
+        "linkedin_message": "sample string",
+        "email_subject": "sample string",
+        "email_body": "sample string",
+        "follow_up_sequence": "sample string",
+        "conversation_starters": "sample string",
+        "timing_recommendation": "sample string",
+        "urgency_level": "sample string",
+        "key_talking_points": "sample string"
+      }
+    ],
+    "total_plans_generated": "sample string",
+    "channel_distribution": "sample string",
+    "overall_strategy_summary": "sample string",
+    "priority_outreach_order": "sample string"
+  }
+}

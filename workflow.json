@@ -1,0 +1,114 @@
+{
+  "workflow": {
+    "name": "B2B Lead Intelligence & Scoring System",
+    "description": "A 3-agent pipeline for coaches and consultants: enriches lead data, scores leads on a 1-10 scale, and generates personalized outreach strategies for qualified leads (score 7+) targeting $3K-$20K coaching/consulting offers.",
+    "nodes": [
+      {
+        "id": "input_node",
+        "type": "Input",
+        "label": "Lead Data Input",
+        "nodeCategory": "input",
+        "description": "CSV upload or manual entry of lead data from LinkedIn Sales Navigator, Crunchbase, G2/Clutch"
+      },
+      {
+        "id": "lead_enrichment_agent",
+        "type": "Agent",
+        "label": "Lead Enrichment Agent",
+        "nodeCategory": "agent",
+        "agent_id": "699b295b458d38ce831d298b",
+        "agent_name": "lead_enrichment_agent",
+        "description": "Enriches lead data with company info, job details, growth signals, and buyer persona fit"
+      },
+      {
+        "id": "lead_scoring_agent",
+        "type": "Agent",
+        "label": "Lead Scoring Agent",
+        "nodeCategory": "agent",
+        "agent_id": "699b295b0f2baa7d103206d3",
+        "agent_name": "lead_scoring_agent",
+        "description": "Scores leads 1-10 based on title fit, company size, growth signals, activity, and intent"
+      },
+      {
+        "id": "outreach_strategy_agent",
+        "type": "Agent",
+        "label": "Outreach Strategy Agent",
+        "nodeCategory": "agent",
+        "agent_id": "699b295b952ac769d7566f38",
+        "agent_name": "outreach_strategy_agent",
+        "description": "Generates personalized outreach strategies for qualified leads (score >= 7)"
+      },
+      {
+        "id": "output_node",
+        "type": "Output",
+        "label": "Qualified Leads Output",
+        "nodeCategory": "end",
+        "description": "Final output with enriched, scored, and outreach-ready qualified leads"
+      }
+    ],
+    "edges": [
+      {
+        "source": "input_node",
+        "target": "lead_enrichment_agent"
+      },
+      {
+        "source": "lead_enrichment_agent",
+        "target": "lead_scoring_agent"
+      },
+      {
+        "source": "lead_scoring_agent",
+        "target": "outreach_strategy_agent"
+      },
+      {
+        "source": "outreach_strategy_agent",
+        "target": "output_node"
+      }
+    ]
+  },
+  "agents": [
+    {
+      "agent_id": "699b295b458d38ce831d298b",
+      "name": "lead_enrichment_agent",
+      "role": "B2B Lead Data Enrichment Specialist",
+      "model": "gpt-4.1",
+      "provider": "openai",
+      "temperature": 0.3,
+      "top_p": 0.9,
+      "capabilities": {
+        "image_output": false,
+        "voice": false,
+        "file_output": false
+      },
+      "response_schema_file": "response_schemas/lead_enrichment_agent_response.json"
+    },
+    {
+      "agent_id": "699b295b0f2baa7d103206d3",
+      "name": "lead_scoring_agent",
+      "role": "B2B Lead Qualification & Scoring Specialist",
+      "model": "gpt-4.1",
+      "provider": "openai",
+      "temperature": 0.2,
+      "top_p": 0.9,
+      "capabilities": {
+        "image_output": false,
+        "voice": false,
+        "file_output": false
+      },
+      "response_schema_file": "response_schemas/lead_scoring_agent_response.json"
+    },
+    {
+      "agent_id": "699b295b952ac769d7566f38",
+      "name": "outreach_strategy_agent",
+      "role": "B2B Outreach & Engagement Strategy Specialist",
+      "model": "gpt-4.1",
+      "provider": "openai",
+      "temperature": 0.6,
+      "top_p": 0.95,
+      "capabilities": {
+        "image_output": false,
+        "voice": false,
+        "file_output": false
+      },
+      "response_schema_file": "response_schemas/outreach_strategy_agent_response.json"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "workflow_name": "B2B Lead Intelligence & Scoring System",
+  "status": "created",
+  "created_at": "2026-02-22",
+  "agents": {
+    "lead_enrichment_agent": {
+      "agent_id": "699b295b458d38ce831d298b",
+      "name": "lead_enrichment_agent",
+      "role": "B2B Lead Data Enrichment Specialist",
+      "model": "gpt-4.1",
+      "provider": "openai",
+      "status": "active"
+    },
+    "lead_scoring_agent": {
+      "agent_id": "699b295b0f2baa7d103206d3",
+      "name": "lead_scoring_agent",
+      "role": "B2B Lead Qualification & Scoring Specialist",
+      "model": "gpt-4.1",
+      "provider": "openai",
+      "status": "active"
+    },
+    "outreach_strategy_agent": {
+      "agent_id": "699b295b952ac769d7566f38",
+      "name": "outreach_strategy_agent",
+      "role": "B2B Outreach & Engagement Strategy Specialist",
+      "model": "gpt-4.1",
+      "provider": "openai",
+      "status": "active"
+    }
+  },
+  "agent_ids": [
+    "699b295b458d38ce831d298b",
+    "699b295b0f2baa7d103206d3",
+    "699b295b952ac769d7566f38"
+  ],
+  "pipeline_flow": [
+    "lead_enrichment_agent",
+    "lead_scoring_agent",
+    "outreach_strategy_agent"
+  ]
+}

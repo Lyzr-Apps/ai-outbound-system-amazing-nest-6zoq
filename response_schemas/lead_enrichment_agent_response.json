@@ -1,0 +1,54 @@
+{
+  "agent_name": "lead_enrichment_agent",
+  "agent_id": "699b295b458d38ce831d298b",
+  "description": "B2B Lead Data Enrichment Specialist that analyzes and enriches raw lead data from LinkedIn Sales Navigator, Crunchbase, and G2/Clutch exports for coaching and consulting businesses.",
+  "agent_type": "json",
+  "accessor": "result",
+  "auto_generated": true,
+  "response_schema": {
+    "enriched_leads": [
+      {
+        "first_name": "string",
+        "last_name": "string",
+        "company_name": "string",
+        "job_title": "string",
+        "company_size": "string",
+        "company_size_category": "string",
+        "linkedin_url": "string",
+        "website": "string",
+        "work_email": "string",
+        "recent_activity": "string",
+        "growth_signals": "string",
+        "buyer_persona_fit": "string",
+        "data_quality_score": "string",
+        "enrichment_notes": "string"
+      }
+    ],
+    "total_leads_processed": "string",
+    "data_quality_summary": "string",
+    "enrichment_summary": "string"
+  },
+  "example_response": {
+    "enriched_leads": [
+      {
+        "first_name": "sample string",
+        "last_name": "sample string",
+        "company_name": "sample string",
+        "job_title": "sample string",
+        "company_size": "sample string",
+        "company_size_category": "sample string",
+        "linkedin_url": "sample string",
+        "website": "sample string",
+        "work_email": "sample string",
+        "recent_activity": "sample string",
+        "growth_signals": "sample string",
+        "buyer_persona_fit": "sample string",
+        "data_quality_score": "sample string",
+        "enrichment_notes": "sample string"
+      }
+    ],
+    "total_leads_processed": "sample string",
+    "data_quality_summary": "sample string",
+    "enrichment_summary": "sample string"
+  }
+}

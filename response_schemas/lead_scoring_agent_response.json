@@ -1,0 +1,54 @@
+{
+  "agent_name": "lead_scoring_agent",
+  "agent_id": "699b295b0f2baa7d103206d3",
+  "description": "B2B Lead Qualification and Scoring Specialist that scores leads on a 1-10 scale based on their fit for B2B coaching and consulting offers in the $3K-$20K range.",
+  "agent_type": "json",
+  "accessor": "result",
+  "auto_generated": true,
+  "response_schema": {
+    "scored_leads": [
+      {
+        "lead_name": "string",
+        "company": "string",
+        "job_title": "string",
+        "overall_score": "string",
+        "title_fit_score": "string",
+        "company_size_score": "string",
+        "growth_signal_score": "string",
+        "activity_score": "string",
+        "intent_score": "string",
+        "qualification_tier": "string",
+        "scoring_rationale": "string",
+        "recommended_action": "string"
+      }
+    ],
+    "total_leads_scored": "string",
+    "qualified_count": "string",
+    "average_score": "string",
+    "score_distribution": "string",
+    "top_recommendation": "string"
+  },
+  "example_response": {
+    "scored_leads": [
+      {
+        "lead_name": "sample string",
+        "company": "sample string",
+        "job_title": "sample string",
+        "overall_score": "sample string",
+        "title_fit_score": "sample string",
+        "company_size_score": "sample string",
+        "growth_signal_score": "sample string",
+        "activity_score": "sample string",
+        "intent_score": "sample string",
+        "qualification_tier": "sample string",
+        "scoring_rationale": "sample string",
+        "recommended_action": "sample string"
+      }
+    ],
+    "total_leads_scored": "sample string",
+    "qualified_count": "sample string",
+    "average_score": "sample string",
+    "score_distribution": "sample string",
+    "top_recommendation": "sample string"
+  }
+}
